@@ -1,7 +1,7 @@
 import NextAuth, { NextAuthOptions } from "next-auth";
 import Google from "next-auth/providers/google";
-
-const authOption: NextAuthOptions = {
+import jwt from "jsonwebtoken";
+export const authOption: NextAuthOptions = {
   providers: [
     Google({
       clientId: process.env.NEXT_GOOGLE_CLIENT!,
@@ -12,9 +12,21 @@ const authOption: NextAuthOptions = {
     sessionToken: {
       name: "token",
       options: {
-        http: true,
+        httpOnly: true,
         path: "/",
       },
+    },
+  },
+  pages: {
+    signIn: "/sign-in",
+  },
+  secret: process.env.NEXTAUTH_SECRET,
+  jwt: {
+    async encode({ secret, token }) {
+      return jwt.sign(token as unknown as string, secret);
+    },
+    async decode({ secret, token }) {
+      return jwt.verify(token as unknown as string, secret) as any;
     },
   },
 };
