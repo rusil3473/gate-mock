@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import jwt from "jsonwebtoken";
 
-const authorized = ["/admin", "/dashboard"];
+const authorized = ["/admin", "/dashboard", "/test"];
 
 export default function proxy(req: NextRequest) {
   const url = req.nextUrl.clone();
@@ -28,4 +28,4 @@ export default function proxy(req: NextRequest) {
   }
 }
 
-export const config = { matcher: ["/admin", "/dashboard"] };
+export const config = { matcher: ["/admin", "/dashboard", "/", "/test:path*"] };
