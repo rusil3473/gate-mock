@@ -23,6 +23,7 @@ export const answerSchema = new Schema({
   year: Number,
   ans: { type: Schema.Types.Mixed },
   set: Number,
+  date: Schema.Types.Date,
 });
 export const yearSchema = new Schema({
   year: Number,
