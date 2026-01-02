@@ -19,3 +19,15 @@ export interface IQuestion {
   pos: number;
   neg: number;
 }
+
+export interface FQuestion {
+  QuesNo: number;
+  Ques: string;
+  Quetype: string;
+  options: Record<string, string>; // Mongoose Map -> JSON Object
+  basedonImage: boolean;
+  ImageUrl?: string;
+  year: number;
+  set: number;
+  pos: number;
+}
