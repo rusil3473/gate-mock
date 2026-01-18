@@ -1,5 +1,6 @@
 "use client";
 import { usePaper } from "@/store/PaperStore";
+import { useAns } from "@/store/QuestionStore";
 import { Paper } from "@/types/appType";
 import { redirect } from "next/navigation";
 
@@ -8,8 +9,13 @@ export default function Papercard(props: Paper) {
   const { setPaper } = usePaper() as {
     setPaper: (branch: string, year: number, set: number) => void;
   };
+  const { setYearSet } = useAns() as {
+    setYearSet: (year: number, set: number) => void;
+  };
+
   const handleTest = () => {
     setPaper(branch, year, set);
+    setYearSet(year, set);
     redirect(`/test/instructions`);
     return;
   };

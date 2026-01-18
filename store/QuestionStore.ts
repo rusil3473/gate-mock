@@ -16,3 +16,24 @@ export const useQuestion = create(
     }
   )
 );
+
+export const useAns = create(
+  persist(
+    (_set) => {
+      return {
+        year: 0,
+        set: 0,
+        answers: {},
+        setYearSet: (year: number, set: number) => {
+          _set({ year: year, set: set, answers: {} });
+        },
+        setAnswers: (key: string, value: string | string[]) => {
+          _set((state: any) => ({
+            answers: { ...state.answers, [key]: value },
+          }));
+        },
+      };
+    },
+    { name: "ans-storage", storage: createJSONStorage(() => localStorage) }
+  )
+);

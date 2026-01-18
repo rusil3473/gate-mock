@@ -1,6 +1,6 @@
 "use client";
 import { usePaper } from "@/store/PaperStore";
-import { useQuestion } from "@/store/QuestionStore";
+import { useAns, useQuestion } from "@/store/QuestionStore";
 import axios from "axios";
 import { redirect, useRouter } from "next/navigation";
 import { useEffect, useLayoutEffect, useState } from "react";
