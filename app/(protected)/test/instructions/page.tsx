@@ -29,7 +29,9 @@ export default function Test() {
   const getQuestions = async () => {
     setLoadingQuestions(true);
     try {
-      const result = await axios.post("/api/questions", { year, branch, set });
+      const result = await axios.get("/api/questions", {
+        params: { year, branch, set },
+      });
       const questions = result.data.questions || [];
       setQuestions(questions);
       setQCount(questions.length);

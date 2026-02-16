@@ -1,7 +1,6 @@
-import mongoose, { mongo, Schema, set } from "mongoose";
-import { Mona_Sans } from "next/font/google";
+import mongoose, { Schema } from "mongoose";
 
-export const questionSchema = new mongoose.Schema({
+const questionSchema = new Schema({
   QuesNo: Number,
   Ques: String,
   Quetype: String,
@@ -18,18 +17,20 @@ export const questionSchema = new mongoose.Schema({
   neg: Number,
 });
 
-export const answerSchema = new Schema({
+const answerSchema = new Schema({
   quesNo: Number,
   year: Number,
   ans: { type: Schema.Types.Mixed },
   set: Number,
   date: Schema.Types.Date,
 });
-export const yearSchema = new Schema({
+
+const yearSchema = new Schema({
   year: Number,
   branch: String,
   set: Number,
 });
+
 export const Question =
   mongoose.models.question || mongoose.model("question", questionSchema);
 export const Ans = mongoose.models.ans || mongoose.model("ans", answerSchema);
