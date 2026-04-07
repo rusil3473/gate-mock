@@ -1,0 +1,10 @@
+db.questions.updateMany(
+  { Quetype: "MCQ", ans: { $type: "array" } },
+  [
+    {
+      $set: {
+        ans: { $arrayElemAt: ["$ans", 0] }
+      }
+    }
+  ]
+)
