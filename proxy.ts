@@ -1,31 +1,43 @@
 import { NextRequest, NextResponse } from "next/server";
-import jwt from "jsonwebtoken";
+import { getToken } from "next-auth/jwt";
 
-const authorized = ["/admin", "/dashboard", "/test"];
+const protectedPrefixes = ["/admin", "/dashboard", "/test", "/profile"];
 
-export default function proxy(req: NextRequest) {
-  const url = req.nextUrl.clone();
-  const currPath = url.pathname;
-  url.pathname = "/sign-in";
-  try {
-    const token = req.cookies.get("token")?.value;
-    const isAuthorized = authorized.includes(currPath);
-    if (!isAuthorized) {
-      return NextResponse.next();
-    }
+const isProtectedPath = (pathname: string) =>
+  protectedPrefixes.some(
+    (prefix) => pathname === prefix || pathname.startsWith(`${prefix}/`),
+  );
 
-    if (!token || typeof token != "string") return NextResponse.rewrite(url);
-    const session = jwt.verify(token, process.env.NEXTAUTH_SECRET!);
-    if (!session) {
-      return NextResponse.rewrite(url);
-    }
-
+export default async function proxy(req: NextRequest) {
+  const pathname = req.nextUrl.pathname;
+  if (!isProtectedPath(pathname)) {
     return NextResponse.next();
-  } catch (e: any) {
-    if (e.message == "invalid token") {
-      return NextResponse.rewrite(url);
-    }
   }
+
+  const token = await getToken({
+    req,
+    secret: process.env.NEXTAUTH_SECRET,
+  });
+
+  if (!token) {
+    const signInUrl = new URL("/sign-in", req.url);
+    signInUrl.searchParams.set("callbackUrl", pathname);
+    return NextResponse.redirect(signInUrl);
+  }
+
+  const isAdminRoute = pathname === "/admin" || pathname.startsWith("/admin/");
+  if (isAdminRoute && token.role !== "admin") {
+    return NextResponse.redirect(new URL("/", req.url));
+  }
+
+  return NextResponse.next();
 }
 
-export const config = { matcher: ["/admin", "/dashboard", "/", "/test:path*"] };
+export const config = {
+  matcher: [
+    "/admin/:path*",
+    "/dashboard/:path*",
+    "/test/:path*",
+    "/profile/:path*",
+  ],
+};

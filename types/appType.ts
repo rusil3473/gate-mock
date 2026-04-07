@@ -11,7 +11,7 @@ export interface IQuestion {
   Quetype: string;
   options: Record<string, string>; // Mongoose Map -> JSON Object
   subject: string;
-  ans: any; // Schema.Types.Mixed
+  ans: string | string[] | number; // Schema.Types.Mixed
   basedonImage: boolean;
   ImageUrl?: string;
   year: number;
