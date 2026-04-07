@@ -3,16 +3,42 @@ import mongoose, { Schema } from "mongoose";
 const questionSchema = new Schema({
   QuesNo: Number,
   Ques: String,
-  Quetype: String,
+  Quetype: {
+    type: String,
+    enum: ["MCQ", "MSQ", "NAT"],
+  },
   options: { type: Map, of: String },
   subject: String,
   ans: {
     type: Schema.Types.Mixed,
+    validate: {
+      validator: function (
+        this: { Quetype?: string },
+        value: unknown,
+      ) {
+        switch (this.Quetype) {
+          case "MCQ":
+            return typeof value === "string";
+
+          case "MSQ":
+            return (
+              Array.isArray(value) && value.every((v) => typeof v === "string")
+            );
+
+          case "NAT":
+            return typeof value === "number";
+
+          default:
+            return false;
+        }
+      },
+    },
   },
   basedonImage: Boolean,
   ImageUrl: String,
   year: Number,
   set: Number,
+  branch: String,
   pos: Number,
   neg: Number,
 });
