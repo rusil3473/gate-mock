@@ -1,17 +1,20 @@
 "use client";
 import NavBar from "@/components/NavBar";
 import Loading from "@/components/Loading";
+import { toUserFacingError } from "@/lib/client-error";
 import { usePaper } from "@/store/PaperStore";
 import { useQuestion } from "@/store/QuestionStore";
+import type { FQuestion } from "@/types/appType";
 import axios from "axios";
 import { useRouter } from "next/navigation";
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 
 export default function Test() {
   const [isAgree, setIsAgree] = useState<boolean>(false);
   const [isReady, setIsReady] = useState<boolean>(false);
   const [loadingQuestions, setLoadingQuestions] = useState<boolean>(false);
   const [qCount, setQCount] = useState<number | null>(null);
+  const [errorMessage, setErrorMessage] = useState<string>("");
 
   const { year, branch, set } = usePaper() as {
     year?: number;
@@ -23,12 +26,13 @@ export default function Test() {
   const router = useRouter();
 
   const { setQuestions } = useQuestion() as {
-    setQuestions: (questions: any[]) => void;
+    setQuestions: (questions: FQuestion[]) => void;
   };
 
-  const getQuestions = async () => {
+  const getQuestions = useCallback(async () => {
     setLoadingQuestions(true);
     try {
+      setErrorMessage("");
       const result = await axios.get("/api/questions", {
         params: { year, branch, set },
       });
@@ -37,11 +41,16 @@ export default function Test() {
       setQCount(questions.length);
       setIsReady(true);
     } catch (error) {
-      console.log(error);
+      setErrorMessage(
+        toUserFacingError(
+          error,
+          "Unable to prepare test questions right now. Please retry.",
+        ),
+      );
     } finally {
       setLoadingQuestions(false);
     }
-  };
+  }, [branch, set, setQuestions, year]);
 
   useEffect(() => {
     if (!hydrated) return;
@@ -49,15 +58,17 @@ export default function Test() {
       router.replace("/");
       return;
     }
-    getQuestions();
-  }, [hydrated, year, branch, set, router]);
+    void getQuestions();
+  }, [getQuestions, hydrated, year, branch, set, router]);
 
   const handleStart = async () => {
     try {
       // optionally request fullscreen here if desired
       router.push("/test");
     } catch (error) {
-      console.log(error);
+      setErrorMessage(
+        toUserFacingError(error, "Unable to start test. Please try again."),
+      );
     }
   };
 
@@ -169,6 +180,11 @@ export default function Test() {
                 </ul>
               </details>
             </div>
+            {errorMessage ? (
+              <p className="mt-4 rounded-xl border border-rose-200 bg-rose-50 px-3 py-2 text-sm text-rose-700">
+                {errorMessage}
+              </p>
+            ) : null}
           </section>
 
           <aside className="bg-white rounded-2xl p-6 shadow flex flex-col justify-between">
