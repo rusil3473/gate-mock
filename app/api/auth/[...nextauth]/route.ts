@@ -1,7 +1,7 @@
 import client from "@/lib/db";
 import { MongoDBAdapter } from "@auth/mongodb-adapter";
 import { ObjectId } from "mongodb";
-import NextAuth, { NextAuthOptions, Session } from "next-auth";
+import NextAuth, { NextAuthOptions } from "next-auth";
 import Google from "next-auth/providers/google";
 
 type AppRole = "admin" | "user";

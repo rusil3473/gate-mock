@@ -1,7 +1,9 @@
 // This approach is taken from https://github.com/vercel/next.js/tree/canary/examples/with-mongodb
 import mongoose from "mongoose";
 import { MongoClient, ServerApiVersion } from "mongodb";
+// import dns from "node:dns";
 
+// dns.setServers(["8.8.8.8", "8.8.4.4"]);
 if (!process.env.MONGODB_URI) {
   throw new Error('Invalid/Missing environment variable: "MONGODB_URI"');
 }

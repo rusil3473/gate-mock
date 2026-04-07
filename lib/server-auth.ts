@@ -1,8 +1,8 @@
 import { authOption } from "@/app/api/auth/[...nextauth]/route";
+import { apiErrorResponse } from "@/lib/api-error";
 import { Session } from "next-auth";
 import { getServerSession } from "next-auth";
 import { redirect } from "next/navigation";
-import { NextResponse } from "next/server";
 
 type UserRole = Session["user"]["role"];
 
@@ -26,17 +26,26 @@ export async function requirePageSession(params: {
 
 export async function requireAPISession(params: {
   roles: UserRole[];
-  redirectTo?: string;
 }) {
-  const { roles, redirectTo = "/sign-in" } = params;
+  const { roles } = params;
   const session = await getServerSession(authOption);
 
   if (!session?.user) {
-    return NextResponse.json({ messgae: "Unauthorized" }, { status: 401 });
+    return apiErrorResponse({
+      message: "You need to sign in to continue.",
+      status: 401,
+      code: "UNAUTHORIZED",
+      context: "auth.requireAPISession",
+    });
   }
 
   if (!roles.includes(session.user.role)) {
-    return NextResponse.json({ messgae: "Forbidden" }, { status: 403 });
+    return apiErrorResponse({
+      message: "You do not have permission for this action.",
+      status: 403,
+      code: "FORBIDDEN",
+      context: "auth.requireAPISession",
+    });
   }
 
   return session;

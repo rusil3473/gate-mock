@@ -1,4 +1,5 @@
 import { connectBD } from "@/lib/db";
+import { AppError, handleApiError } from "@/lib/api-error";
 import { Question } from "@/models/QuestionModel";
 import { FQuestion } from "@/types/appType";
 import { NextRequest, NextResponse } from "next/server";
@@ -12,6 +13,7 @@ type QuestionDoc = {
   ImageUrl?: string;
   year: number;
   set: number;
+  branch?: string;
   pos: number;
 };
 
@@ -32,13 +34,27 @@ export async function GET(req: NextRequest) {
       typeof params.get("branch") === "string" ? params.get("branch") : "";
 
     if (!year || !branch || !set) {
-      return NextResponse.json({ message: "Incomplete Data" }, { status: 400 });
+      throw new AppError({
+        message: "Year, branch, and set are required.",
+        status: 400,
+        code: "VALIDATION_ERROR",
+        details: "Missing query params. Expected: year, branch, set.",
+      });
     }
 
     await connectBD();
-    const questions = (await Question.find({ year, set })
+    const questions = (await Question.find({ year, set, branch })
       .sort({ QuesNo: 1 })
       .lean()) as QuestionDoc[];
+
+    if (questions.length === 0) {
+      throw new AppError({
+        message: "No questions found for the selected paper.",
+        status: 404,
+        code: "NOT_FOUND",
+        details: `No records for year=${year}, set=${set}, branch=${branch}.`,
+      });
+    }
 
     const formattedQuestions: FQuestion[] = questions.map((question) => ({
       QuesNo: question.QuesNo,
@@ -57,10 +73,9 @@ export async function GET(req: NextRequest) {
       { status: 200 },
     );
   } catch (error) {
-    console.error("Failed to fetch questions", error);
-    return NextResponse.json(
-      { message: "Failed to fetch questions" },
-      { status: 500 },
-    );
+    return handleApiError({
+      context: "api.questions.GET",
+      error,
+    });
   }
 }
