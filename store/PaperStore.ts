@@ -3,7 +3,7 @@ import { createJSONStorage, persist } from "zustand/middleware";
 
 export const usePaper = create(
   persist(
-    (_set, _get) => ({
+    (_set) => ({
       year: 0,
       branch: "",
       set: 0,
