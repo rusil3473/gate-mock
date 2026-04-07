@@ -4,7 +4,7 @@ import { createJSONStorage, persist } from "zustand/middleware";
 
 export const useQuestion = create(
   persist(
-    (set, get) => ({
+    (set) => ({
       questions: [],
       setQuestions: (que: IQuestion[]) => {
         set({ questions: que });
@@ -28,9 +28,12 @@ export const useAns = create(
           _set({ year: year, set: set, answers: {} });
         },
         setAnswers: (key: string, value: string | string[]) => {
-          _set((state: any) => ({
+          _set((state: { answers: Record<string, string | string[]> }) => ({
             answers: { ...state.answers, [key]: value },
           }));
+        },
+        clearAnswers: () => {
+          _set({ answers: {} });
         },
       };
     },

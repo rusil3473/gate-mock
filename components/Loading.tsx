@@ -2,21 +2,22 @@
 
 export default function Loading({ count = 6 }: { count?: number }) {
   return (
-    <section className="py-8">
-      <div className="flex justify-center mb-6">
+    <section className="py-2 sm:py-4 animate-fade-up">
+      <div className="flex items-center justify-center gap-3 mb-6">
         <div
           role="status"
-          className="animate-spin rounded-full h-10 w-10 border-t-2 border-b-2 border-teal-600"
+          className="h-8 w-8 rounded-full border-2 border-slate-200 border-t-slate-700 animate-spin"
           aria-hidden="true"
         />
+        <span className="text-sm text-slate-500">Loading papers...</span>
       </div>
 
-      <div className="max-w-5xl mx-auto">
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 place-items-stretch">
+      <div className="max-w-6xl mx-auto">
+        <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-5 place-items-stretch">
           {Array.from({ length: count }).map((_, i) => (
             <div
               key={i}
-              className="h-36 bg-white border border-slate-100 rounded-2xl p-4 animate-pulse"
+              className="h-56 rounded-3xl border border-slate-200 bg-white/80 p-5 animate-pulse"
               aria-hidden="true"
             />
           ))}
