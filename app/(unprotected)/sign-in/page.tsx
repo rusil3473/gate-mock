@@ -1,13 +1,19 @@
 "use client";
 import { signIn, useSession } from "next-auth/react";
-import { useEffect } from "react";
 import Image from "next/image";
-import { redirect } from "next/navigation";
+import { useRouter } from "next/navigation";
+import { useEffect } from "react";
 
 export default function Home() {
-  const { data: session, status } = useSession();
+  const { status } = useSession();
+  const router = useRouter();
 
-  if (status === "authenticated") return redirect("/");
+  useEffect(() => {
+    if (status !== "authenticated") return;
+    router.replace("/");
+  }, [router, status]);
+
+  if (status === "authenticated") return null;
 
   return (
     <nav className="h-screen flex justify-center items-center">
