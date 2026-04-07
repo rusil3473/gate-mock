@@ -1,7 +1,7 @@
-import PapersHome from "@/components/home/PapersHome";
+import Home from "@/components/Home";
 import { requirePageSession } from "@/lib/server-auth";
 
-export default async function ProtectedHomePage() {
-  await requirePageSession({ roles: ["admin", "user"] });
-  return <PapersHome />;
+export default async function page() {
+  await requirePageSession({ roles: ["user"] });
+  return <Home />;
 }

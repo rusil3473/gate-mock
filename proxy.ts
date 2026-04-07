@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { getToken } from "next-auth/jwt";
 
-const protectedPrefixes = ["/admin", "/dashboard", "/test", "/profile"];
+const protectedPrefixes = ["/admin", "/dashboard", "/test"];
 
 const isProtectedPath = (pathname: string) =>
   protectedPrefixes.some(
@@ -34,10 +34,5 @@ export default async function proxy(req: NextRequest) {
 }
 
 export const config = {
-  matcher: [
-    "/admin/:path*",
-    "/dashboard/:path*",
-    "/test/:path*",
-    "/profile/:path*",
-  ],
+  matcher: ["/admin/:path*", "/dashboard/:path*", "/test/:path*"],
 };
