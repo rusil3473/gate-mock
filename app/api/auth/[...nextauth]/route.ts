@@ -8,6 +8,7 @@ type AppRole = "admin" | "user";
 
 const USERS_COLLECTION = "users";
 const DEFAULT_ROLE: AppRole = "user";
+const authSecret = process.env.NEXTAUTH_SECRET ?? process.env.AUTH_SECRET;
 
 const isAppRole = (value: unknown): value is AppRole =>
   value === "admin" || value === "user";
@@ -82,7 +83,7 @@ export const authOption: NextAuthOptions = {
       }
     },
   },
-  secret: process.env.NEXTAUTH_SECRET,
+  secret: authSecret,
 };
 
 const handle = NextAuth(authOption);

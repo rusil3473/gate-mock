@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { getToken } from "next-auth/jwt";
 
 const protectedPrefixes = ["/admin", "/dashboard", "/test", "/profile"];
+const authSecret = process.env.NEXTAUTH_SECRET ?? process.env.AUTH_SECRET;
 
 const isProtectedPath = (pathname: string) =>
   protectedPrefixes.some(
@@ -16,12 +17,15 @@ export default async function proxy(req: NextRequest) {
 
   const token = await getToken({
     req,
-    secret: process.env.NEXTAUTH_SECRET,
+    secret: authSecret,
   });
 
   if (!token) {
     const signInUrl = new URL("/sign-in", req.url);
-    signInUrl.searchParams.set("callbackUrl", pathname);
+    signInUrl.searchParams.set(
+      "callbackUrl",
+      `${pathname}${req.nextUrl.search}`,
+    );
     return NextResponse.redirect(signInUrl);
   }
 
